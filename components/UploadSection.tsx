@@ -1,13 +1,17 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { Upload, Mail, ArrowRight, Shield, Zap, File } from 'lucide-react';
+import { LoadingState } from './LoadingState';
 
 export const UploadSection = () => {
+    const router = useRouter();
     const [file, setFile] = useState<File | null>(null);
     const [email, setEmail] = useState('');
     const [isDragging, setIsDragging] = useState(false);
     const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleDragOver = useCallback((e: React.DragEvent) => {
         e.preventDefault();
@@ -46,7 +50,7 @@ export const UploadSection = () => {
         }
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!file) {
             setError('Please upload a CSV file');
             return;
@@ -55,8 +59,22 @@ export const UploadSection = () => {
             setError('Please enter your email address');
             return;
         }
-        console.log('Submitting:', { file, email });
+
+        setIsLoading(true);
+        setError('');
+
+        await new Promise((resolve) => setTimeout(resolve, 2500));
+
+        router.push('/results');
     };
+
+    if (isLoading) {
+        return (
+            <section className="flex-1 flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12 md:py-16">
+                <LoadingState />
+            </section>
+        );
+    }
 
     return (
         <section className="flex-1 flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12 md:py-16">
@@ -75,31 +93,29 @@ export const UploadSection = () => {
                         onDragOver={handleDragOver}
                         onDragLeave={handleDragLeave}
                         onDrop={handleDrop}
-                        className={`relative border-2 border-dashed rounded-xl sm:rounded-2xl p-8 sm:p-12 md:p-16 text-center transition-all duration-300 ${
-                            isDragging ? 'border-blue-500 bg-blue-50 scale-[1.02] shadow-lg' : 'border-gray-300 bg-white hover:border-blue-400 hover:bg-gray-50 hover:shadow-md'
-                        }`}
+                        className={`relative border-2 rounded-lg sm:rounded-xl p-8 sm:p-10 md:p-12 transition-all duration-200 ${isDragging ? 'border-blue-500 bg-blue-500/5 shadow-lg shadow-blue-500/10' : 'border-border bg-card/50 hover:border-blue-500/50 hover:bg-card/80'}`}
                     >
                         <input type="file" accept=".csv" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" id="file-upload" />
-                        <div className={`flex flex-col gap-3 sm:gap-4 ${file ? 'items-start w-full' : 'items-center'}`}>
+                        <div className={`flex flex-col gap-4 sm:gap-5 ${file ? 'items-start w-full' : 'items-center'}`}>
                             {file ? (
                                 <div className="w-full space-y-3">
-                                    <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
+                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                         <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                         </svg>
-                                        <span className="font-medium">File uploaded successfully</span>
+                                        <span className="font-medium">File ready for analysis</span>
                                     </div>
-                                    <div className="bg-white border-2 border-blue-200 rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
+                                    <div className="bg-card border-2 border-border rounded-lg p-3 sm:p-4 hover:border-blue-500/50 transition-all">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center flex-shrink-0">
-                                                <File className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                                            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-lg bg-muted flex items-center justify-center flex-shrink-0 border border-border">
+                                                <File className="w-5 h-5 sm:w-6 sm:h-6 text-foreground" />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-sm sm:text-base font-semibold text-gray-900 truncate">{file.name}</p>
+                                                <p className="text-sm sm:text-base font-medium text-foreground truncate">{file.name}</p>
                                                 <div className="flex items-center gap-3 mt-0.5">
-                                                    <span className="text-xs text-gray-500">{(file.size / 1024).toFixed(2)} KB</span>
+                                                    <span className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(2)} KB</span>
                                                     <span className="text-xs text-green-600 font-medium flex items-center gap-1">
-                                                        <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                                                        <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
                                                         Ready
                                                     </span>
                                                 </div>
@@ -109,7 +125,7 @@ export const UploadSection = () => {
                                                     e.stopPropagation();
                                                     setFile(null);
                                                 }}
-                                                className="text-gray-400 hover:text-red-500 transition-colors p-2 hover:bg-red-50 rounded-lg flex-shrink-0 group"
+                                                className="text-muted-foreground hover:text-destructive transition-colors p-2 hover:bg-muted rounded-lg flex-shrink-0"
                                                 title="Remove file"
                                             >
                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -118,26 +134,26 @@ export const UploadSection = () => {
                                             </button>
                                         </div>
                                     </div>
-                                    <button onClick={() => setFile(null)} className="text-xs sm:text-sm text-blue-600 hover:text-blue-700 font-medium hover:underline transition-colors">
-                                        Upload a different file
+                                    <button onClick={() => setFile(null)} className="text-xs sm:text-sm text-blue-500 hover:text-blue-600 font-medium transition-colors">
+                                        Replace file
                                     </button>
                                 </div>
                             ) : (
                                 <>
-                                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center shadow-lg transform transition-transform hover:scale-110 duration-300">
-                                        <Upload className="w-8 h-8 sm:w-10 sm:h-10 text-white" strokeWidth={2.5} />
+                                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg bg-muted border border-border flex items-center justify-center">
+                                        <Upload className="w-6 h-6 sm:w-7 sm:h-7 text-muted-foreground" strokeWidth={2} />
                                     </div>
-                                    <div className="space-y-2">
-                                        <p className="text-gray-900 font-semibold text-base sm:text-lg">Drop your CSV file here</p>
-                                        <p className="text-xs sm:text-sm text-gray-600">
-                                            or{' '}
-                                            <label htmlFor="file-upload" className="text-blue-600 hover:text-blue-700 font-semibold hover:underline cursor-pointer transition-colors">
+                                    <div className="space-y-2 text-center">
+                                        <p className="text-foreground font-medium text-base sm:text-lg">Upload Trade History</p>
+                                        <p className="text-sm sm:text-base text-muted-foreground">
+                                            Drag and drop your CSV file, or{' '}
+                                            <label htmlFor="file-upload" className="text-blue-500 hover:text-blue-600 font-medium cursor-pointer transition-colors underline decoration-blue-500/30 hover:decoration-blue-600">
                                                 browse
-                                            </label>{' '}
-                                            to choose a file
+                                            </label>
                                         </p>
-                                        <p className="text-xs text-gray-500 mt-2 sm:mt-3 bg-gray-100 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full inline-flex items-center gap-1">
-                                            <File className="w-3 h-3 sm:w-4 sm:h-4" /> CSV format only
+                                        <p className="text-xs text-muted-foreground mt-3 pt-3 border-t border-border inline-flex items-center gap-2">
+                                            <File className="w-3.5 h-3.5" />
+                                            CSV format required
                                         </p>
                                     </div>
                                 </>
