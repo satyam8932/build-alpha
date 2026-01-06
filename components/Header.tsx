@@ -13,11 +13,14 @@ export const Header = () => {
                         <Link href="/" className="px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-accent">
                             Home
                         </Link>
-                        {/* <Link href="/" className="hidden sm:block px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-accent">
-                            Documentation
-                        </Link> */}
-                        <Link href="/" className="px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-accent">
-                            Support
+
+                        <Link href="/status" className="group flex items-center gap-3 px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium text-muted-foreground hover:text-foreground transition-all rounded-md hover:bg-accent/50">
+                            <span className="relative flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                            </span>
+
+                            <span>Status</span>
                         </Link>
                     </nav>
                 </div>

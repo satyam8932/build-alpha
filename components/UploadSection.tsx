@@ -4,6 +4,8 @@ import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Upload, Mail, ArrowRight, Shield, Zap, File } from 'lucide-react';
 import { LoadingState } from './LoadingState';
+import { analyzeStrategy } from '@/lib/api-client';
+import { ApiError } from '@/types/api';
 
 export const UploadSection = () => {
     const router = useRouter();
@@ -63,9 +65,15 @@ export const UploadSection = () => {
         setIsLoading(true);
         setError('');
 
-        await new Promise((resolve) => setTimeout(resolve, 2500));
-
-        router.push('/results');
+        try {
+            const response = await analyzeStrategy(file);
+            sessionStorage.setItem('analysisResult', JSON.stringify(response));
+            router.push('/results');
+        } catch (err: unknown) {
+            const apiError = err as ApiError;
+            setError(apiError.message);
+            setIsLoading(false);
+        }
     };
 
     if (isLoading) {
@@ -178,7 +186,8 @@ export const UploadSection = () => {
 
                     <button
                         onClick={handleSubmit}
-                        className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-4 px-6 rounded-xl transition-all shadow-lg hover:shadow-xl transform hover:scale-[1.02] flex items-center justify-center gap-2 group cursor-pointer"
+                        disabled={!file || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)}
+                        className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-4 px-6 rounded-xl transition-all shadow-lg hover:shadow-xl transform hover:scale-[1.02] flex items-center justify-center gap-2 group cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                     >
                         Run Analysis
                         <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

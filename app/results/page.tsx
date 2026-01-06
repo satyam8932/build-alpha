@@ -1,14 +1,40 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { HealthStateBadge } from '@/components/HealthStateBadge';
 import { TopReasonsList } from '@/components/TopReasonsList';
 import { UpgradeSection } from '@/components/UpgradeSection';
-import mockResponse from '@/lib/mock-response.json';
+import { AnalyzeResponse } from '@/types/api';
 
 export default function ResultsPage() {
-    const { health_state, top_reasons } = mockResponse;
+    const router = useRouter();
+    const [data, setData] = useState<AnalyzeResponse | null>(() => {
+        if (typeof window === 'undefined') return null;
+        const storedData = sessionStorage.getItem('analysisResult');
+        if (!storedData) return null;
+        try {
+            return JSON.parse(storedData);
+        } catch {
+            return null;
+        }
+    });
 
-    const simplifiedReasons = top_reasons.map((reason) => ({
+    useEffect(() => {
+        if (!data) {
+            router.push('/');
+        }
+    }, [data, router]);
+
+    if (!data) {
+        return null;
+    }
+
+    const { health_state, reasons } = data;
+
+    const simplifiedReasons = reasons.map((reason) => ({
         code: reason.code,
         details: reason.details,
     }));
