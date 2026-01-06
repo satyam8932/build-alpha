@@ -81,11 +81,11 @@ export const UploadSection = () => {
             <div className="w-full max-w-2xl">
                 <div className="text-center mb-8 sm:mb-12">
                     <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4 px-2">
-                        <span className="text-foreground">Upload Your Data.</span>
+                        <span className="text-foreground">Upload Your Trades.</span>
                         <br />
                         <span className="bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent">Get Clear Results.</span>
                     </h1>
-                    <p className="text-muted-foreground text-base sm:text-lg max-w-xl mx-auto px-4">Submit your trading data for comprehensive analysis. Results displayed instantly, with a full report sent to your inbox.</p>
+                    <p className="text-muted-foreground text-base sm:text-lg max-w-xl mx-auto px-4">Instantly see whether your strategy is structurally sound — or quietly fragile. Full report shown here and sent to your inbox.</p>
                 </div>
 
                 <div className="bg-card border border-border rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6 shadow-xl">
